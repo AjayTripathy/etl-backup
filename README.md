@@ -7,6 +7,8 @@ With your kubectl connected to the cluster whose data you want to back up:
 
 ```
 git clone https://github.com/kubecost/etl-backup.git
+
 cd etl-backup
+
 ./download-etl.sh <kubecost-namespace>
 ```
