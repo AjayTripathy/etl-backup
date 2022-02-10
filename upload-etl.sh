@@ -37,23 +37,12 @@ if [ "$r" == "${r#[Y]}" ]; then
   exit 0
 fi
 
-# Create a temporary directory to write files
-echo "Creating temporary directory $tmpDir..."
-mkdir $tmpDir
 
 # Grab the Pod Name of the cost-analyzer pod
 podName=`kubectl get pods -n $namespace -l app=cost-analyzer -o jsonpath='{.items[0].metadata.name}'`
 
 # Copy the Files to tmp directory
 echo "Copying ETL Files from $namespace/$podName:$etlDir to $tmpDir..."
-kubectl cp -c cost-model $namespace/$podName:$etlDir $tmpDir
+kubectl cp -c cost-model ./kubecost-etl.tar.gz $namespace/$podName:/var/configs/kubecost-etl.tar.gz
 
-# Archive the directory 
-tar cfz kubecost-etl.tar.gz $tmpDir
-
-# Delete the temporary directory
-rm -rf $tmpDir
-
-# Log final messages
-echo "ETL Archive Created: kubecost-etl.tar.gz"
-echo "Done"
+# TODO: exec into the pod and replace the ETL
