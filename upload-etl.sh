@@ -41,8 +41,19 @@ fi
 # Grab the Pod Name of the cost-analyzer pod
 podName=`kubectl get pods -n $namespace -l app=cost-analyzer -o jsonpath='{.items[0].metadata.name}'`
 
+# Grab the Deployment name of the cost-analyzer pod
+deployName=`kubectl get deploy -n $namespace -l app=cost-analyzer -o jsonpath='{.items[0].metadata.name}'`
+
 # Copy the Files to tmp directory
 echo "Copying ETL Files from $namespace/$podName:$etlDir to $tmpDir..."
 kubectl cp -c cost-model ./kubecost-etl.tar.gz $namespace/$podName:/var/configs/kubecost-etl.tar.gz
 
-# TODO: exec into the pod and replace the ETL
+# Exec into the pod and replace the ETL
+echo "Execing into the pod and replacing $etlDir "
+kubectl exec -n $namespace pod/$podName -- ash -c " \
+  tar xzf /var/configs/kubecost-etl.tar.gz --directory /var/configs/db && \
+  mv /var/configs/db/kc-etl-tmp /var/configs/db/etl"
+
+# Restart the application to pull ETL data into memory
+echo "Restarting the application"
+kubectl -n $namespace rollout restart deployment/$deployName
