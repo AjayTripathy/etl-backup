@@ -19,16 +19,17 @@ fi
 # Accept etl .tar file to upload
 etlFile=$3
 if [ "$etlFile" == "" ]; then
-  etlDir=/var/configs/db/etl
+  etlFile=kubecost-etl.tar.gz
 fi
 
 # Grab the Current Context for Prompt
 currentContext=`kubectl config current-context`
 
-echo "This script will delete the Kubecost ETL storage and replace it with ETL files from the current directory using the following:"
+echo "This script will delete the Kubecost ETL storage and replace it with ETL files using the following:"
 echo "  Kubectl Context: $currentContext"
 echo "  Namespace: $namespace"
-echo "  ETL Directory: $etlDir"
+echo "  ETL File (source): $etlFile"
+echo "  ETL Directory (destination): $etlDir"
 echo -n "Would you like to continue [Y/n]? "
 read r
 
@@ -45,14 +46,14 @@ podName=`kubectl get pods -n $namespace -l app=cost-analyzer -o jsonpath='{.item
 deployName=`kubectl get deploy -n $namespace -l app=cost-analyzer -o jsonpath='{.items[0].metadata.name}'`
 
 # Copy the Files to tmp directory
-echo "Copying ETL Files from $namespace/$podName:$etlDir to $tmpDir..."
-kubectl cp -c cost-model ./kubecost-etl.tar.gz $namespace/$podName:/var/configs/kubecost-etl.tar.gz
+echo "Copying ETL Files from $etlFile to $podName..."
+kubectl cp -c cost-model $etlFile $namespace/$podName:/var/configs/kubecost-etl.tar.gz
 
 # Exec into the pod and replace the ETL
 echo "Execing into the pod and replacing $etlDir "
 kubectl exec -n $namespace pod/$podName -- ash -c " \
-  tar xzf /var/configs/kubecost-etl.tar.gz --directory /var/configs/db && \
-  mv /var/configs/db/kc-etl-tmp /var/configs/db/etl"
+  tar xzf /var/configs/kubecost-etl.tar.gz --directory /var/configs && \
+  mv /var/configs/kc-etl-tmp $etlDir"
 
 # Restart the application to pull ETL data into memory
 echo "Restarting the application"
