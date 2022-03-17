@@ -51,8 +51,12 @@ kubectl cp -c cost-model $etlFile $namespace/$podName:/var/configs/kubecost-etl.
 
 # Exec into the pod and replace the ETL
 echo "Execing into the pod and replacing $etlDir "
+set -e
 kubectl exec -n $namespace pod/$podName -- ash -c " \
+  rm -rf /var/configs/kc-etl-tmp && \
   tar xzf /var/configs/kubecost-etl.tar.gz --directory /var/configs && \
+  [ -d /var/configs/kc-etl-tmp ] && rm -rf $etlDir \
+    || (echo '$etlFile is invalid' && exit 1) && \
   mv /var/configs/kc-etl-tmp $etlDir"
 
 # Restart the application to pull ETL data into memory
