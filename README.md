@@ -24,7 +24,7 @@ sudo chmod -R 755 /var/configs/db/etl
 Move the given backed-up data into the directory, so that `bingen` is the first directory nested under `etl`:
 ```
 cd kc-etl-tmp
-mv bingen /var/configs/db/etl
+sudo mv bingen /var/configs/db/etl
 ```
 
 Now you shold be able to make an ETL and query it:
