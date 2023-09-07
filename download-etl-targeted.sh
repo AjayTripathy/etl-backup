@@ -10,10 +10,10 @@
 #   $ ./download-etl-targeted.sh [namespace] [etlDir] [window]
 # 
 # Examples:
-#   # Download the last 7 days of all your ETL files (this is the default)
+#   # Download the last 10 days of all your ETL files (this is the default)
 #   $ ./download-etl-targeted.sh
 # 
-#   # Download the last 7 days of your daily Asset ETL files
+#   # Download the last 10 days of your daily Asset ETL files
 #   $ ./download-etl-targeted.sh kubecost /var/configs/db/etl/bingen/assets/1d
 # 
 #   # Download the last 3 days of all your Allocation ETL files (replace with your own epoch timestamp)
@@ -35,12 +35,12 @@ if [ "$etlDir" == "" ]; then
   etlDir=/var/configs/db/etl
 fi
 
-# Accept Optional Window -- default to 7d
+# Accept Optional Window -- default to 10d
 window=$3
 if [ "$window" == "" ]; then
   currentTime=$(date +%s)
-  sevenDaysAgo=$((currentTime - 7 * 24 * 60 * 60))
-  window=$sevenDaysAgo
+  tenDaysAgo=$((currentTime - 10 * 24 * 60 * 60))
+  window=$tenDaysAgo
 fi
 
 # Grab the Current Context for Prompt
