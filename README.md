@@ -1,3 +1,7 @@
+# THIS REPOS HAS MOVED
+[This repository has moved to kubecost-utilities](https://github.com/kubecost/kubecost-utilities)
+
+
 # etl-backup
 Back up Kubecost's ETL data to your local filesystem. Execs into the kubecost pod, tars the contents of the ETL files, and `kubectl cp`'s them down to your local machine.
 
